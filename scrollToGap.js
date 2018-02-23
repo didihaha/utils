@@ -1,3 +1,9 @@
+
+/**
+ * 滚动窗口到目标位置
+ * @param {*目标位置的offsetTop} gap 
+ * @param {*滚动时长: 300s} speed 
+ */
 const scrollToGap = (gap, speed) => {
     const scrollTop = document.documentElement.scrollTop,
         step = (gap - scrollTop) / (speed / 20)
@@ -9,7 +15,7 @@ const scrollToGap = (gap, speed) => {
             setTimeout(function () {
                 toGap(scrollTop + step, gap, step)
             }, 20)
-            console.log(result)
+            
         } else {
             document.documentElement.scrollTop = gap
         }
