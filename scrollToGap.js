@@ -13,7 +13,7 @@ const scrollToGap = (gap, speed) => {
         if (result >= 10) {
             document.documentElement.scrollTop = scrollTop + step
             setTimeout(function () {
-                toGap(scrollTop + step, gap, step)
+                toGap(scrollTop + step)
             }, 20)
             
         } else {
