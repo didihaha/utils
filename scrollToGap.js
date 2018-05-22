@@ -12,9 +12,9 @@ const scrollToGap = (gap, speed) => {
         const result = Math.abs( scrollTop + step - gap )                 //每次滚动距离
         if (result >= 10) {
             document.documentElement.scrollTop = scrollTop + step
-            setTimeout(function () {
+            requestAnimationFrame(function () {
                 toGap(scrollTop + step)
-            }, 20)
+            })
             
         } else {
             document.documentElement.scrollTop = gap
