@@ -89,3 +89,5 @@ class Progress extends Component {
         this.drawProgress()
     }
 }
+
+export default Progress
