@@ -1,7 +1,8 @@
 /**
  * @description 根据传入的数据是否存在传入的数组中，决定是添加还是删除
- * @param {*} arr 传入的数组
- * @param {*} data 数组的子元素，判断是否存在
+ * @param {*Array} arr 传入的数组
+ * @param {*Any} data 数组的子元素，判断是否存在
+ * @returns {*Array}
  */
 const addOrDelete = (arr, data) => {
     const index = arr.findIndex(item => JSON.stringify(item) === JSON.stringify(data))

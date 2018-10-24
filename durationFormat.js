@@ -1,4 +1,8 @@
-// 时间转换 68 => 01:08
+/**
+ * 时间转换 68 => 01:08
+ * @param {*Number} duration
+ * @returns {*String} 时分秒格式
+ */
 function durationFormat (duration) {
     const time = []
     let hours = '0',
