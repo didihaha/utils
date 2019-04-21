@@ -35,7 +35,7 @@ function resolve (_this, value) {
         _this._value = value
         finale(_this)
     } catch (err) {
-        reject(_this, value)
+        reject(_this, err)
     }
 }
 
@@ -62,7 +62,7 @@ function handle (_this, deferred) {
     // 已处理的标识
     _this._handled = true
     // 放置到微栈队列处理事务
-    Promise._immediateFn(function () {
+    MyPromise._immediateFn(function () {
         const cb = _this._state === 1 ? deferred.onFulfilled : deferred.onRejected
         // then中若未传入任何参数直接使用resolve或reject方法处理
         if (cb === null) {
@@ -80,23 +80,18 @@ function handle (_this, deferred) {
     })
 }
 
-Promise._immediateFn =
-    (typeof setImmediate === 'function' &&
-    function(fn) {
-        setImmediate(fn);
-    }) ||
-    function(fn) {
-        setTimeoutFunc(fn, 0);
-    }
+MyPromise._immediateFn = function (fn) {
+    typeof setImmediate === 'function' ? setImmediate(fn) : setTimeoutFunc(fn, 0)
+}
 
-Promise.prototype.then = function (onFulfilled, onRejected) {
+MyPromise.prototype.then = function (onFulfilled, onRejected) {
     const prom = new this.constructor(function () {})
 
     handle(this, new Handler(onFulfilled, onRejected, prom))
     return prom
 }
 
-Promise.prototype.catch = function (onRejected) {
+MyPromise.prototype.catch = function (onRejected) {
     return this.then(null, onRejected)
 }
 
@@ -104,4 +99,31 @@ function Handler (onFulfilled, onRejected, promise) {
     this.onFulfilled = onFulfilled
     this.onRejected = onRejected
     this.promise = promise
+}
+
+MyPromise.race = function (promiseArray) {
+    return new MyPromise(function (resolve, reject) {
+        for (let i = 0; i < promiseArray.length; i++) {
+            promiseArray[i].then(resolve, reject)
+        }
+    })
+}
+MyPromise.all = function (promiseArray) {
+    return new MyPromise(function (resolve, reject) {
+        const args = Array.from(promiseArray)
+        const length = args.length
+        function res (i, value) {
+            try {
+                args[i] = value
+                if (--length === 0) {
+                    resolve(args)
+                }
+            } catch (err) {
+                    reject(err)
+            }
+        }
+        for (let i = 0; i < length; i++) {
+            res(i, args[i])
+        }
+    })
 }
