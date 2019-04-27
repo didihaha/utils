@@ -112,7 +112,7 @@ MyPromise.all = function (promiseArray) {
     return new MyPromise(function (resolve, reject) {
         const args = Array.from(promiseArray)
         const length = args.length
-        function res (i, value) {
+        function res (i, value) {           
             try {
                 args[i] = value
                 if (--length === 0) {
