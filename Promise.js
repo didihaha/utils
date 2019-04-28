@@ -68,11 +68,24 @@ function resolve (_this, value) {
 }
 
 function reject (_this, value) {
-
+    _this._state = 2
+    _this._value = value
+    finale(_this)
 }
 
 function finale (_this) {
-
+    if (_this._deferreds.length === 0 && _this._state === 2) {
+        Promise._immediateFn(function () {
+            if (!_this._handled) {
+                console.warn('请在尾部添加catch进行错误处理')
+            }
+        })
+    }
+    for (let i = 0; i < _this._deferreds.length; i++) {
+        const deferred = _this._deferreds[i]
+        handle(_this, deferred)
+    }
+    _this._deferreds = null
 }
 
 function handle (_this, deferred) {
@@ -80,4 +93,32 @@ function handle (_this, deferred) {
     while (_this._state === 3) {
         _this = _this._value
     }
+    if (_this._state === 0) {
+        _this._deferreds.push(deferred)
+        return null
+    }
+    _this._handled = true
 }
+
+Promise.resolve = function (value) {
+    // 传入的参数为promise对象直接返回
+    if (value && typeof value === 'object' && this.constructor === Promise) {
+        return value
+    }
+    return new Promise(function (resolve) {
+        resolve(value)
+    })
+}
+
+Promise.reject = function (err) {
+    return new Promise(function (resolve, reject) {
+        reject(err)
+    })
+}
+
+Promise._immediateFn = 
+    (typeof setImmediate === 'function' && function (fn) {
+        setImmediate(fn)
+    }) || function () {
+        setTimeout(fn, 0)
+    }
