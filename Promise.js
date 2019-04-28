@@ -15,7 +15,7 @@ function Promise (fn) {
     this._handled = false
     this._value = null
     this._deferreds = []
-    doResolve(fn)
+    doResolve(this, fn)
 }
 
 
@@ -48,7 +48,7 @@ function resolve (_this, value) {
         }
         if (value && (typeof value === 'object' || typeof value === 'function')) {
             const then = value.then
-            if (_this instanceof Promise) {
+            if (value instanceof Promise) {
                 _this._state = 3
                 _this._value = value
                 finale(_this)
@@ -74,9 +74,10 @@ function reject (_this, value) {
 }
 
 function finale (_this) {
-    if (_this._deferreds.length === 0 && _this._state === 2) {
+    if (_this._state === 2 && _this._deferreds.length === 0) {
         Promise._immediateFn(function () {
             if (!_this._handled) {
+                console.log(_this)
                 console.warn('请在尾部添加catch进行错误处理')
             }
         })
@@ -98,6 +99,36 @@ function handle (_this, deferred) {
         return null
     }
     _this._handled = true
+    Promise._immediateFn(function () {
+        const cb = _this._state === 1 ? _this.onFulfilled : _this.onRejected;
+        if (cb === null) {
+            (_this._state === 1 ? resolve : reject)(deferred.promise, _this._value)
+        }
+        let ret = null
+        try {
+            ret = cb(_this._value)
+        } catch (err) {
+            reject(deferred.promise, err)
+            return null
+        }
+        resolve(deferred.promise, ret)
+    })
+}
+
+Promise.prototype.then = function (onFulfilled, onRejected) {
+    const prom = new this.constructor(function () {})
+    handle(this, new Handler(onFulfilled, onRejected, prom))
+    return prom
+}
+
+Promise.prototype.catch = function (onRejected) {
+    return this.then(null, onRejected)
+}
+
+function Handler (onFulfilled = null, onRejected = null, prom) {
+    this.promise = prom
+    this.onFulfilled = onFulfilled
+    this.onRejected = onRejected
 }
 
 Promise.resolve = function (value) {
@@ -116,9 +147,61 @@ Promise.reject = function (err) {
     })
 }
 
+Promise.all = function (arr) {
+    return new Promise(function (resolve, reject) {
+        if (!arr || arr.length === undefined) {
+            throw new TypeError('Promise.all的参数应该是一个数组')
+        }
+        const args = Array.from(arguments)
+        if (args.length === 0) {
+            resolve([])
+            return null
+        }
+        const length = args.length
+
+        function res (i, value) {
+            try {
+                if (value && (typeof value === 'object' || typeof value === 'function')) {
+                    const then = value.then
+                    if (typeof then === 'function') {
+                        // 调用then方法，将包裹res函数的函数推到deferreds中缓存起来，直到状态改变再次从deferreds中抛出来
+                        then.call(
+                            value,
+                            function (value) {
+                                res(i, value, reject)
+                            },
+                            reject)
+                        return null
+                    }
+                }
+                args[i] = value
+                if (--length === 0) {
+                    resolve(args)
+                }
+            } catch (err) {
+                reject(err)
+            }
+        }
+
+        for (let i = 0; i < args.length; i++) {
+            res(i, args[i])
+        }
+    })
+}
+
+Promise.race = function (arr) {
+    return new Promise(function (resolve, reject) {
+        for (let i = 0; i < arr.length; i++) {
+            arr[i].then(resolve, reject)
+        }
+    })
+}
+
 Promise._immediateFn = 
     (typeof setImmediate === 'function' && function (fn) {
         setImmediate(fn)
-    }) || function () {
+    }) || function (fn) {
         setTimeout(fn, 0)
     }
+
+// export default Promise
