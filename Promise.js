@@ -100,7 +100,7 @@ function handle (_this, deferred) {
     }
     _this._handled = true
     Promise._immediateFn(function () {
-        const cb = _this._state === 1 ? _this.onFulfilled : _this.onRejected;
+        const cb = _this._state === 1 ? deferred.onFulfilled : deferred.onRejected;
         if (cb === null) {
             (_this._state === 1 ? resolve : reject)(deferred.promise, _this._value)
         }
@@ -125,10 +125,10 @@ Promise.prototype.catch = function (onRejected) {
     return this.then(null, onRejected)
 }
 
-function Handler (onFulfilled = null, onRejected = null, prom) {
+function Handler (onFulfilled, onRejected = null, prom) {
     this.promise = prom
-    this.onFulfilled = onFulfilled
-    this.onRejected = onRejected
+    this.onFulfilled = onFulfilled || null
+    this.onRejected = onRejected || null
 }
 
 Promise.resolve = function (value) {
@@ -192,7 +192,7 @@ Promise.all = function (arr) {
 Promise.race = function (arr) {
     return new Promise(function (resolve, reject) {
         for (let i = 0; i < arr.length; i++) {
-            arr[i].then(resolve, reject)
+            Promise.resolve(arr[i]).then(resolve, reject)
         }
     })
 }
