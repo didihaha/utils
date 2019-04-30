@@ -1,7 +1,11 @@
 //入口文件
 import createStore from './createStore'
+import combineReducers from './combineReducers'
 
-function plan (state, action) {
+function plan (state = {
+    name: '哈哈哈',
+    age: 27
+}, action) {
     switch (action.type) {
         case 1:
             return {
@@ -18,9 +22,9 @@ function plan (state, action) {
     }
 }
 
-const store = createStore(plan, {
-    name: '李强'
-})
+const store = createStore(combineReducers({
+    name: plan
+}))
 
 const res1 = store.subscribe(function () {
     console.log('事件监听触发了')
@@ -39,5 +43,8 @@ target.addEventListener('click', function () {
 })
 
 cancel.addEventListener('click', function () {
-    res2()
+    store.dispatch({
+        type: 2
+    })
+    console.log( store.getState() )
 })
