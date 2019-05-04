@@ -1,4 +1,7 @@
-function createStore (reducer) {
+function createStore (reducer, enhancer) {
+    if (enhancer && typeof enhancer === 'function') {
+        return enhancer(createStore)(reducer)
+    }
     let state = {}
     const listeners = []
 
