@@ -28,12 +28,15 @@ function getChain (number) {
     return res
 }
 
-const chain1 = getChain(93685)
-const chain2 = getChain(52362)
-const chain3 = getChain(35462)
-
 function finale (...args) {
-    return args.reduce((a, b) => chainWithChain(a, b))
+    const _args = args.map(arg => getChain(arg))
+    let finalChain = _args.reduce((a, b) => chainWithChain(a, b))
+    const res = []
+    while (finalChain) {
+        res.push(finalChain.value)
+        finalChain = finalChain.next
+    }
+    return res
 }
 
 function chainWithChain (chain1, chain2) {
@@ -58,9 +61,8 @@ function chainWithChain (chain1, chain2) {
         // 重写next为下一个链表的子值
         next = next.setNext(resultChainItem)
     } while (chain1Item || chain2Item || modified)
-
     return res
 }
 
-const res = finale(chain1, chain2)
+const res = finale(93685, 52362)
 console.log(res)

@@ -13,13 +13,15 @@ function getIndex (arr, target) {
     const res = []
     const module = {}                               // 给个对象放置每条数组每条元素值和序列
     for (let i = 0; i < arr.length; i++) {
-        module[arr[i]] = i                        
         const leave = target - arr[i]
-        if (module[leave]) {
+        // 若module中存在，且不为自身： 3 + 3 = 6
+        if (module[leave] !== undefined && module[leave] !== i) {
             res.push(i, module[leave])
             return res
         }
+        module[arr[i]] = i                    
     }
 }
-const res = getIndex([63, 85, 6, -888,2, 7, 11, 15], 9)
+
+const res = getIndex([3, 3], 6)
 console.log(res)
