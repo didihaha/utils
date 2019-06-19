@@ -1,20 +1,24 @@
 var reverse = function(x) {
-    let str = x.toString()
+    let arr = x.toString().split('')
     let start = 1
-    if (str[0] === '-') {
-        str = str.substring(1)
+    if (arr[0] === '-') {
+        arr.shift()
         start = -1
     }
-    let i = j = Math.floor(str.length / 2)
+    let i = j = Math.floor(arr.length / 2)
     while (i >= 0) {
-        const mbp = str[i]
-        str[i] = str[j]
-        str[j] = mbp
+        const mbp = arr[i]
+        arr[i] = arr[j]
+        arr[j] = mbp
         i--
         j++
     }
-    return +str * start
+    let res = arr.join('').replace(/^0+/g, '')
+    if (res > (2 ** 31 - 1) ) {
+        return 0
+    }
+    return +(res) * start
 };
 
-const res = reverse(-9879)
+const res = reverse(-123)
 console.log(res)

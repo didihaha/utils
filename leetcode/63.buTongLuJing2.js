@@ -1,5 +1,8 @@
-let res = []
-var uniquePaths = function(m, n) {
+let res = [], _obstacleGrid = null
+var uniquePathsWithObstacles = function(obstacleGrid) {
+    _obstacleGrid = obstacleGrid
+    let m = obstacleGrid.length
+    let n = obstacleGrid[0] && obstacleGrid[0].length || 1
     res = new Array(m)
     for (let i = 0; i < m; ++i) {
         res[i] = []
@@ -14,6 +17,9 @@ var uniquePaths = function(m, n) {
 }
 
 function dpPath (x, y) {
+    if (_obstacleGrid[x][y] === 1) {
+        return 0
+    }
     if (res[x][y] !== 0) {
         return res[x][y]
     }
@@ -35,6 +41,3 @@ function dpPath (x, y) {
     }
     
 }
-
-const final = uniquePaths(7, 3)
-console.log(final)
