@@ -16,12 +16,13 @@ function getIndex (arr, target) {
         const leave = target - arr[i]
         // 若module中存在，且不为自身： 3 + 3 = 6
         if (module[leave] !== undefined && module[leave] !== i) {
-            res.push(i, module[leave])
-            return res
+            res.push([arr[i], arr[module[leave]]])
+            // return res
         }
         module[arr[i]] = i                    
     }
+    return res
 }
 
-const res = getIndex([3, 3], 6)
+const res = getIndex([3, 3, 0, 6, 7, 8, 87, 2, 4], 6)
 console.log(res)

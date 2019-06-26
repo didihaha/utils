@@ -19,7 +19,8 @@ class ChainItem {
 }
 
 function getChain (number) {
-    const arr = number.toString().split('').reverse()
+    console.log(number)
+    const arr = number.reverse()
     const res = new ChainItem(arr.shift())
     arr.reduce((a, b) => {
         const nextChainItem = new ChainItem(b)
@@ -28,8 +29,8 @@ function getChain (number) {
     return res
 }
 
-function finale (...args) {
-    const _args = args.map(arg => getChain(arg))
+function addTwoNumbers () {
+    const _args = Array.prototype.slice.call(arguments).map(arg => getChain(arg))
     let finalChain = _args.reduce((a, b) => chainWithChain(a, b))
     const res = []
     while (finalChain) {
@@ -50,8 +51,8 @@ function chainWithChain (chain1, chain2) {
     do {
         let resultOfAdd = (chain1Item && +chain1Item.value || 0) + (chain2Item && +chain2Item.value || 0) + modified
         if (resultOfAdd >= 10) {
-            resultOfAdd -= 10
-            modified = 1
+            modified = Math.floor(resultOfAdd / 10)
+            resultOfAdd %= 10
         } else {
             modified = 0
         }
@@ -64,5 +65,5 @@ function chainWithChain (chain1, chain2) {
     return res
 }
 
-const res = finale(93685, 52362)
-console.log(res)
+const res = addTwoNumbers([2,4,3], [5, 6, 4])
+// console.log(res)

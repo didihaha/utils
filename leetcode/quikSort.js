@@ -5,9 +5,9 @@ const quick = function (arr, left, right) {
     if (arr.length > 1) {
         index = partition(arr, left, right)
         if (left < index - 1) {
-            quick(arr, left, index -1)
+            quick(arr, left, index - 1)
         }
-        if (right > index) {
+        if (index < right) {
             quick(arr, index, right)
         }
     }
@@ -22,6 +22,7 @@ const quick = function (arr, left, right) {
 function partition (arr, left, right) {
     const middle = arr[Math.floor((left + right) / 2)]
     let i = left, j = right
+
     while (i <= j) {
         while (arr[i] < middle) {
             i++
