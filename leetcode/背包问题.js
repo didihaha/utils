@@ -11,24 +11,37 @@ function maxBag () {
         {
             weight: 4,
             value: 3000
+        },
+        {
+            weight: 3,
+            value: 5000
         }
     ]
 
-    // 根据性价比排序
-    const valueByWeight = arr.sort((a, b) => (a.value / a.weight) - (b.value / b.weight))
-    let lost = 4
-    let res = 0
+    const length = arr.length
+    const maxWeight = 7
 
-    let i = arr.length - 1
-    while (lost > 0 && i >= 0) {
-        if (valueByWeight[i].weight <= lost) {
-            // 如果当前物品能放入背包就放入
-            res += valueByWeight[i].value
-            lost -= valueByWeight[i].weight
-        }
-        i--
+    const res = []
+    for (let i = 0; i < length; i++) {
+        res[i] = []
     }
-    return res
+    // 第一行直接以第一件物品来塞
+    for (let w = 1; w < maxWeight; w++) {
+        res[0][w] = arr[0]['weight'] <= w ? arr[0]['value'] : 0
+    }
+    for (let i = 1; i < length; i++) {
+        for (let w = 1; w < maxWeight; w++) {
+            if (arr[i]['weight'] <= w) {
+                const topValue = res[i - 1][w]
+                // 如果当前物品的重量单独塞不满背包，就用
+                const currentValue = arr[i]['weight'] < w ? arr[i]['value'] + res[i - 1][w - arr[i]['weight']] : arr[i]['value']
+                res[i][w] = Math.max(topValue, currentValue)
+            } else {
+                res[i][w] = res[i - 1][w]
+            }
+        }
+    }
+    console.log(res)
 }
 
 const res = maxBag()
